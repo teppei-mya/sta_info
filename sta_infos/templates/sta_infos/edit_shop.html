@@ -1,0 +1,52 @@
+{% extends "sta_infos/base.html" %}
+{% load static %}
+{% load bootstrap4 %}
+{% block page_header %}
+<h2><a href="{% url 'sta_infos:stadium' stadium.id %}">{{ stadium }}</a></h2>
+<h3><a href="{% url 'sta_infos:topic' stadium.id topic.id %}">{{ topic }}</a></h3>
+{% endblock page_header %}
+{% block content %}
+<h5>店舗情報を編集</h5>
+<form action="{% url 'sta_infos:edit_shop' stadium.id topic.id shop.id %}" method='POST' class="form">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons %}
+    <button name="submit" class="btn btn-primary">店舗情報を更新</button>
+    {% endbuttons %}
+</form>
+<div id="shop_map"></div>
+<script src="{% static 'js/icon.js' %}"></script>
+<script>
+    const data_shop = JSON.parse('{{ shop_list|safe }}')
+    for(i in data_shop){
+        var lat_shop = data_shop[i].fields.lat
+        var lon_shop = data_shop[i].fields.lon
+        var sta_point = L.latLng(lat_shop,lon_shop);
+        var shop_map = L.map('shop_map').setView([lat_shop,lon_shop], 12);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(shop_map);
+        var marker = L.marker([lat_shop,lon_shop], { icon: icon_color01 }).addTo(shop_map);
+        marker.bindPopup(data_shop[i].fields.name);
+    }
+    //クリックイベント
+    var add_marker = null;
+    shop_map.on('click', function(e) {
+        //クリック位置経緯度取得
+        if (add_marker) {
+            shop_map.removeLayer(add_marker);
+            add_marker = null;
+        }
+        new_lat = e.latlng.lat;
+        new_lng = e.latlng.lng;
+        //経緯度表示
+        var shop_point = L.latLng(new_lat,new_lng);
+        add_marker = L.marker([new_lat,new_lng], { icon: icon_color02 }).addTo(shop_map);
+        document.getElementById('id_lat').value = new_lat ;
+        document.getElementById('id_lon').value = new_lng ;
+        var dist = Math.round(sta_point.distanceTo(shop_point))
+        document.getElementById('id_distance').value = dist ;
+    } );
+</script>
+{% endblock content %}

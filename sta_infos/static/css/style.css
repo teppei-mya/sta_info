@@ -1,0 +1,30 @@
+input[type="number"]::-webkit-outer-spin-button, 
+input[type="number"]::-webkit-inner-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+} 
+
+.icon_color01 {
+    filter: hue-rotate(50deg);
+}
+.icon_color02 {
+    filter: hue-rotate(150deg);
+}
+#map {
+    height: 500px; 
+    }
+#stadium_map {
+    height: 500px;
+}
+#topic_map {
+    height: 500px; margin: 20px 0;
+}
+#shop_map {
+    height: 500px;
+}
+a:hover {
+    text-decoration: none;
+}
+.shop_list li{
+    margin:15px 0;
+}

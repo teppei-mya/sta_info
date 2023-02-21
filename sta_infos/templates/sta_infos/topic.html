@@ -1,0 +1,49 @@
+{% extends "sta_infos/base.html" %}
+{% load static %}
+{% block page_header %}
+<h2><a href="{% url 'sta_infos:stadium' stadium.id %}">{{ stadium }}</a></h2>
+<h3>{{ topic }}</h3>
+{% endblock page_header %}
+
+{% block content %}
+<h5><a href="{% url 'sta_infos:new_shop' stadium.id topic.id %}">新規店舗を追加</a></h5>
+<div id="topic_map"></div>
+<ul class="shop_list">
+    {% for shop in shops %}
+    <li>
+        <h5><a href="{% url 'sta_infos:shop' stadium.id topic.id shop.id %}">{{ shop }}</a></h5>
+        スタジアムから約{{ shop.distance }}m
+    </li>
+    {% empty %}
+    <li><h5>お店はまだ登録されていません。</h5></li>
+    {% endfor %}
+</ul>
+<h5><a href="{% url 'sta_infos:new_shop' stadium.id topic.id %}">新規店舗を追加</a></h5>
+<script src="{% static 'js/icon.js' %}"></script>
+<script>
+    const data_sta = JSON.parse('{{ stadium_list|safe }}');
+    const data_topic = JSON.parse('{{ topic_list|safe }}')
+    const data_shop = JSON.parse('{{ shop_list|safe }}');
+    for(i in data_sta){
+        var lat_sta = data_sta[i].fields.lat
+        var lon_sta = data_sta[i].fields.lon
+        var topic_map = L.map('topic_map').setView([lat_sta,lon_sta], 12);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(topic_map);
+        var marker = L.marker([lat_sta,lon_sta]).addTo(topic_map);
+        marker.bindPopup(data_sta[i].fields.name);
+        for(k in data_topic){
+            for(j in data_shop){
+            var lat_shop = data_shop[j].fields.lat
+            var lon_shop = data_shop[j].fields.lon
+            var dist = data_shop[j].fields.distance
+            var marker = L.marker([lat_shop,lon_shop], { icon: icon_color01 }).addTo(topic_map);
+            var shop_url = "{% url 'sta_infos:shop' 123456 789012 345678 %}".replace(/123456/, data_sta[i].pk).replace(/789012/,data_topic[k].pk).replace(/345678/,data_shop[j].pk);
+            marker.bindPopup(data_shop[j].fields.name + '<br>スタジアムから' + dist + 'm' + '<br><a href="' + shop_url + '">口コミを見る</a>')
+            }
+        }
+    }
+</script>
+{% endblock content %}

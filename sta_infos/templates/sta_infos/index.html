@@ -1,0 +1,13 @@
+{% extends "sta_infos/base.html" %}
+
+{% block page_header %}
+<div class="jumbotron">
+    <h1 class="display-5">アウェイ観戦を楽しもう！</h1>
+    <p class="lead">
+        このサイトでは、スタジアム周辺のおすすめ飲食店や駐車場についての口コミを閲覧・投稿できます。<br>
+        アウェイ観戦に出かける前に、みんなのおすすめを調べましょう！<br>
+        みんなに教えたいおすすめを投稿しましょう！
+    </p>
+    <a class="nav-link" href="{% url 'sta_infos:mainmap' %}">メインマップ</a>
+</div>
+{% endblock page_header %}

@@ -1,0 +1,17 @@
+{% extends "sta_infos/base.html" %}
+{% load bootstrap4 %}
+{% block page_header %}
+<h2><a href="{% url 'sta_infos:stadium' stadium.id %}">{{ stadium }}</a></h2>
+<h3><a href="{% url 'sta_infos:topic' stadium.id topic.id %}">{{ topic }}</a></h3>
+{% endblock page_header %}
+{% block content %}
+<h4><a href="{% url 'sta_infos:shop' stadium.id topic.id shop.id %}">{{ shop }}</a></h4>
+<h5>新規口コミを追加</h5>
+<form action="{% url 'sta_infos:new_review' stadium.id topic.id shop.id %}" method='POST' class="form">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons %}
+    <button name="submit" class="btn btn-primary">口コミを追加</button>
+    {% endbuttons %}
+</form>
+{% endblock content %}

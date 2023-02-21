@@ -1,0 +1,25 @@
+{% extends "sta_infos/base.html" %}
+{% load bootstrap4 %}
+{% block page_header %}
+<h2><a href="{% url 'sta_infos:stadium' stadium.id %}">{{ stadium }}</a></h2>
+<h3><a href="{% url 'sta_infos:topic' stadium.id topic.id %}">{{ topic }}</a></h3>
+{% endblock page_header %}
+{% block content %}
+<h4>{{ shop }}</h4>
+<h5>口コミを削除</h5>
+<form action="{% url 'sta_infos:delete_review' stadium.id topic.id shop.id review.id %}" method='POST' class="form">
+    {% csrf_token %}
+    <p>あなたが投稿した以下の口コミを削除します。削除すると元に戻せません。本当に削除しますか。</p>
+    <div class="card mb-3">
+        <h5 class="card-header">
+            {{ review.date_added|date:'Y年m月d日 H:i' }} - 投稿者： {{ review.owner }}
+        </h5>
+        <div class="card-body">
+            {{ review }}
+        </div>
+    </div>
+    {% buttons %}
+    <button name="submit" class="btn btn-primary">削除する</button>
+    {% endbuttons %}
+</form>
+{% endblock content %}

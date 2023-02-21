@@ -1,0 +1,31 @@
+{% extends "sta_infos/base.html" %}
+
+{% block page_header %}
+<h2>{{ stadium }}</h2>
+{% endblock page_header %}
+
+{% block content %}
+<ul>
+    {% for topic in topics %}
+    <li><h5><a href="{% url 'sta_infos:topic' stadium.id topic.id %}">{{topic}}</a></h5></li>
+    {% empty %}
+    <li><h5>トピックはまだ作成されていません。</h5></li>
+    {% endfor %}
+</ul>
+<div id="stadium_map"></div>
+    <script>
+        const data = JSON.parse('{{ stadium_list|safe }}');
+        for(i in data){
+            var lat = data[i].fields.lat
+            var lon = data[i].fields.lon
+            var stadium_map = L.map('stadium_map').setView([lat,lon], 12);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(stadium_map);
+            var marker = L.marker([lat,lon]).addTo(stadium_map);
+            marker.bindPopup(data[i].fields.name);
+        }
+
+    </script>
+{% endblock content %}

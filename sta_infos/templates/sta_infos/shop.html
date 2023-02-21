@@ -1,0 +1,49 @@
+{% extends "sta_infos/base.html" %}
+{% load static %}
+{% block page_header %}
+<h2><a href="{% url 'sta_infos:stadium' stadium.id %}">{{ stadium }}</a></h2>
+<h3><a href="{% url 'sta_infos:topic' stadium.id topic.id %}">{{ topic }}</a></h3>
+{% endblock page_header %}
+{% block content %}
+<h4>{{ shop }}</h4>
+<p>スタジアムから約{{ shop.distance }}m - <a href="{% url 'sta_infos:edit_shop' stadium.id topic.id shop.id %}">店舗情報を編集</a></p>
+<h5><a href="{% url 'sta_infos:new_review' stadium.id topic.id shop.id %}">新規口コミを追加</a></h5>
+<ul>
+    {% for review in reviews %}
+    <div class="card mb-3">
+        <h5 class="card-header">
+            {{ review.date_added|date:'Y年m月d日 H:i' }} - 投稿者： {{ review.owner| truncatechars:4 }}....
+            <small>
+                {% if review.owner == request.user %}
+                <p>
+                    <a href="{% url 'sta_infos:edit_review' stadium.id topic.id shop.id review.id %}">自分の投稿した口コミを編集する</a> - 
+                    <a href="{% url 'sta_infos:delete_review' stadium.id topic.id shop.id review.id %}">自分の投稿した口コミを削除する</a>
+                </p>
+                {% endif %}
+            </small>
+        </h5>
+        <div class="card-body">
+            {{ review }}
+        </div>
+    </div>
+    {% empty %}
+    <p>口コミはまだ投稿されていません。</p>
+    {% endfor %}
+</ul>
+<div id="shop_map"></div>
+<script src="{% static 'js/icon.js' %}"></script>
+<script>
+    const data_shop = JSON.parse('{{ shop_list|safe }}')
+    for(i in data_shop){
+        var lat_shop = data_shop[i].fields.lat
+        var lon_shop = data_shop[i].fields.lon
+        var shop_map = L.map('shop_map').setView([lat_shop,lon_shop], 12);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(shop_map);
+        var marker = L.marker([lat_shop,lon_shop], { icon: icon_color01 }).addTo(shop_map);
+        marker.bindPopup(data_shop[i].fields.name);
+    }
+</script>
+{% endblock content %}

@@ -1,0 +1,11 @@
+{% extends "sta_infos/base.html" %}
+
+{% block content %}
+    <form method="post" action="{% url 'users:register' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button name="submit">登録する</button>
+    </form>
+
+{% endblock content %}

@@ -1,0 +1,22 @@
+{% extends "sta_infos/base.html" %}
+{% block page_header %}
+<h2>メインマップ</h2>
+{% endblock page_header %}
+{% block content %}
+    <div id="map"></div>
+    <script>
+        var map = L.map('map').setView([35.5062894,138.6484609], 6);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        const data = JSON.parse('{{ stadiums|safe }}');
+        for(i in data){
+            var lat = data[i].fields.lat
+            var lon = data[i].fields.lon
+            var marker = L.marker([lat,lon]).addTo(map);
+            var sta_url = "{% url 'sta_infos:stadium' 123456 %}".replace(/123456/,data[i].pk);
+            marker.bindPopup(data[i].fields.name + '<br>所在地：' + data[i].fields.address + '<br>収容観客数：' + data[i].fields.audience + '<br><a href="' + sta_url + '">周辺情報を見る</a>');
+        }
+    </script>
+{% endblock content %}
